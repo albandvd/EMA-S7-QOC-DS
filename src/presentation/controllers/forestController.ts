@@ -13,6 +13,8 @@ export class ForestController {
         app.delete('/forest/:id', this.delete.bind(this));
         app.get('/forest/:id/species', this.getTreeSpecies.bind(this));
         app.post('/forest/:id/deforest', this.deforest.bind(this));
+        app.post('/forest/:id/tree', this.addTree.bind(this));
+        app.delete('/forest/:id/tree/:treeId', this.removeTree.bind(this));
     }
 
     async create(req: Request, res: Response): Promise<void> {
@@ -95,6 +97,40 @@ export class ForestController {
                 res.status(404).json({ error: (error as Error).message });
             } else if ((error as Error).message === "Not enough trees to deforest") {
                 res.status(400).json({ error: (error as Error).message });
+            } else {
+                res.status(500).json({ error: (error as Error).message });
+            }
+        }
+    }
+
+    async addTree(req: Request, res: Response): Promise<void> {
+        try {
+            const forest = await this.forestService.addTreeToForest(req.params.id, req.body.treeId);
+            if (forest) {
+                res.status(200).json(forest);
+            } else {
+                res.status(404).send();
+            }
+        } catch (error) {
+            if ((error as Error).message === "Forest not found" || (error as Error).message === "Tree not found") {
+                res.status(404).json({ error: (error as Error).message });
+            } else {
+                res.status(500).json({ error: (error as Error).message });
+            }
+        }
+    }
+
+    async removeTree(req: Request, res: Response): Promise<void> {
+        try {
+            const forest = await this.forestService.removeTreeFromForest(req.params.id, req.params.treeId);
+            if (forest) {
+                res.status(200).json(forest);
+            } else {
+                res.status(404).send();
+            }
+        } catch (error) {
+            if ((error as Error).message === "Forest not found" || (error as Error).message === "Tree not found in forest") {
+                res.status(404).json({ error: (error as Error).message });
             } else {
                 res.status(500).json({ error: (error as Error).message });
             }
