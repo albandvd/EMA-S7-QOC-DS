@@ -120,13 +120,14 @@ describe("ForestService", () => {
             ];
             const forest = new Forest("forest1", ForestType.TEMPERATE, trees, 45);
             mockForestRepository.get.mockResolvedValue(forest);
-            mockForestRepository.update.mockResolvedValue({ ...forest, trees: [trees[2]] });
+            const updatedForest = new Forest("forest1", ForestType.TEMPERATE, [trees[2]], 45);
+            mockForestRepository.update.mockResolvedValue(updatedForest);
 
             const result = await forestService.deforest("forest1", 2);
 
             expect(result?.trees.length).toBe(1);
             expect(mockForestRepository.get).toHaveBeenCalledWith("forest1");
-            expect(mockForestRepository.update).toHaveBeenCalledWith("forest1", { ...forest, trees: [trees[2]] });
+            expect(mockForestRepository.update).toHaveBeenCalledWith("forest1", forest);
         });
 
         it("should throw NotFoundError when deforesting a non-existent forest", async () => {
