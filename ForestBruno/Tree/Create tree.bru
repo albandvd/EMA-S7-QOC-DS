@@ -18,3 +18,14 @@ body:json {
     "carbonStorageCapacity": 120
   }
 }
+
+tests {
+  test("Tree created", () => {
+    expect(res.status).to.equal(201)
+  
+    const body = res.body
+    expect(body).to.have.property("id")
+    const treeId = body.id
+    bru.setVar("treeId1", treeId)
+  })
+}

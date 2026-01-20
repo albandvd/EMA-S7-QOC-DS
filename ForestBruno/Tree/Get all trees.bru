@@ -9,3 +9,18 @@ get {
   body: none
   auth: none
 }
+
+tests {
+  test("All tree received", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body).to.be.an("array");
+    
+    res.body.forEach(tree => {
+      expect(tree).to.have.property("id");
+      expect(tree).to.have.property("birth");
+      expect(tree).to.have.property("species");
+      expect(tree).to.have.property("exposure");
+      expect(tree).to.have.property("carbonStorageCapacity");
+    });
+  });
+}

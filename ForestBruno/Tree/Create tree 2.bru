@@ -13,8 +13,19 @@ post {
 body:json {
   {
     "birth": "2024-01-01T00:00:00.000Z",
-    "species": "OAK",
-    "exposure": "SUNNY",
-    "carbonStorageCapacity": 120
+    "species": "EVERGREEN_OAK",
+    "exposure": "MID_SHADOW",
+    "carbonStorageCapacity": 150
   }
+}
+
+tests {
+  test("Tree 2 created", () => {
+    expect(res.status).to.equal(201)
+  
+    const body = res.body
+    expect(body).to.have.property("id")
+    const treeId = body.id
+    bru.setVar("treeId2", treeId)
+  })
 }
