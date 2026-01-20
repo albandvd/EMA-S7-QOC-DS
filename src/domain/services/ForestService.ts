@@ -46,16 +46,10 @@ export class ForestService implements ForestServicePort {
     }
 
     async deforest(id: string, count: number): Promise<Forest | null> {
-        const forest = await this.forestRepository.get(id);
+        const forest = await this.forestRepository.deforest(id, count);
         if (!forest) {
             throw new NotFoundError("Forest not found");
         }
-
-        if (forest.trees.length < count) {
-            throw new Error("Not enough trees to deforest");
-        }
-
-        forest.trees.splice(0, count);
-        return this.forestRepository.update(id, forest);
+        return forest;
     }
 }
