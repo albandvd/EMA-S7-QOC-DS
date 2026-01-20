@@ -254,6 +254,64 @@ paths:
         '404':
           description: Forest not found
 
+  /forest/{id}/tree:
+    post:
+      summary: Add a tree to a forest
+      operationId: addTreeToForest
+      tags:
+        - forest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                treeId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: The updated forest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forest"
+        '404':
+          description: Forest or Tree not found
+
+  /forest/{id}/tree/{treeId}:
+    delete:
+      summary: Delete a tree from a forest
+      operationId: removeTreeFromForest
+      tags:
+        - forest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+        - name: treeId
+          in: path
+          required: true
+          description: The tree id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tree removed from forest
+        '404':
+          description: Forest or Tree not found
+
   /co2/forest/{id}/absorption:
     get:
       summary: Get the CO2 absorption of a forest
