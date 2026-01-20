@@ -1,5 +1,6 @@
 import { ForestService } from "./ForestService";
 import { ForestRepositoryPort } from "../../application/ports/outbound/ForestRepositoryPort";
+import { TreeRepositoryPort } from "../../application/ports/outbound/TreeRepositoryPort";
 import Forest from "../models/Forest";
 import { Tree } from "../models/Tree";
 import { Species } from "../models/Species";
@@ -16,11 +17,19 @@ const mockForestRepository: jest.Mocked<ForestRepositoryPort> = {
     deforest: jest.fn(),
 };
 
+const mockTreeRepository: jest.Mocked<TreeRepositoryPort> = {
+    findAll: jest.fn(),
+    findById: jest.fn(),
+    insert: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+};
+
 describe("ForestService", () => {
     let forestService: ForestService;
 
     beforeEach(() => {
-        forestService = new ForestService(mockForestRepository);
+        forestService = new ForestService(mockForestRepository, mockTreeRepository);
         jest.clearAllMocks();
     });
 
@@ -135,6 +144,73 @@ describe("ForestService", () => {
         it("should throw an error when there are not enough trees to deforest", async () => {
             mockForestRepository.deforest.mockRejectedValue(new Error("Not enough trees to deforest"));
             await expect(forestService.deforest("forest1", 2)).rejects.toThrow("Not enough trees to deforest");
+        });
+    });
+
+    describe("addTreeToForest", () => {
+        it("should add a tree to a forest", async () => {
+            const forest = new Forest("forest1", ForestType.TEMPERATE, [], 45);
+            const tree = new Tree(new Date(), Species.OAK, Exposure.SUNNY, 10, "tree1");
+            const updatedForest = new Forest("forest1", ForestType.TEMPERATE, [tree], 45);
+
+            mockForestRepository.get.mockResolvedValue(forest);
+            mockTreeRepository.findById.mockReturnValue(tree);
+            mockForestRepository.update.mockResolvedValue(updatedForest);
+
+            const result = await forestService.addTreeToForest("forest1", "tree1");
+
+            expect(result).toEqual(updatedForest);
+            expect(mockForestRepository.get).toHaveBeenCalledWith("forest1");
+            expect(mockTreeRepository.findById).toHaveBeenCalledWith("tree1");
+            expect(mockForestRepository.update).toHaveBeenCalledWith("forest1", forest);
+        });
+
+        it("should throw NotFoundError if forest is not found", async () => {
+            mockForestRepository.get.mockResolvedValue(null);
+            await expect(forestService.addTreeToForest("non-existent", "tree1")).rejects.toThrow(NotFoundError);
+        });
+
+        it("should throw NotFoundError if tree is not found", async () => {
+            const forest = new Forest("forest1", ForestType.TEMPERATE, [], 45);
+            mockForestRepository.get.mockResolvedValue(forest);
+            mockTreeRepository.findById.mockReturnValue(null);
+
+            await expect(forestService.addTreeToForest("forest1", "non-existent")).rejects.toThrow(NotFoundError);
+        });
+    });
+
+    describe("removeTreeFromForest", () => {
+        const tree1 = new Tree(new Date(), Species.OAK, Exposure.SUNNY, 10, "tree1");
+        const tree2 = new Tree(new Date(), Species.FIR, Exposure.SHADOW, 20, "tree2");
+
+        it("should remove a tree from a forest", async () => {
+            const forest = new Forest("forest1", ForestType.TEMPERATE, [tree1, tree2], 45);
+            const updatedForest = new Forest("forest1", ForestType.TEMPERATE, [tree2], 45);
+            mockForestRepository.get.mockResolvedValue(forest);
+            mockForestRepository.update.mockResolvedValue(updatedForest);
+
+            const result = await forestService.removeTreeFromForest("forest1", "tree1");
+
+            expect(result).toEqual(updatedForest);
+            expect(mockForestRepository.get).toHaveBeenCalledWith("forest1");
+            expect(mockForestRepository.update).toHaveBeenCalledWith("forest1", expect.any(Forest));
+        });
+
+        it("should throw NotFoundError if forest is not found", async () => {
+            mockForestRepository.get.mockResolvedValue(null);
+            await expect(forestService.removeTreeFromForest("non-existent", "tree1")).rejects.toThrow(NotFoundError);
+        });
+
+        it("should throw NotFoundError if forest has no trees", async () => {
+            const forest = new Forest("forest1", ForestType.TEMPERATE, [], 45);
+            mockForestRepository.get.mockResolvedValue(forest);
+            await expect(forestService.removeTreeFromForest("forest1", "tree1")).rejects.toThrow(NotFoundError);
+        });
+
+        it("should throw NotFoundError if tree is not in the forest", async () => {
+            const forest = new Forest("forest1", ForestType.TEMPERATE, [tree2], 45);
+            mockForestRepository.get.mockResolvedValue(forest);
+            await expect(forestService.removeTreeFromForest("forest1", "tree1")).rejects.toThrow(NotFoundError);
         });
     });
 });

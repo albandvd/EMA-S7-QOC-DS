@@ -8,4 +8,6 @@ export interface ForestServicePort {
     delete(id: string): Promise<boolean>;
     getTreeSpecies(id: string): Promise<string[]>;
     deforest(id: string, count: number): Promise<Forest | null>;
+    addTreeToForest(forestId: string, treeId: string): Promise<Forest | null>;
+    removeTreeFromForest(forestId: string, treeId: string): Promise<Forest | null>;
 }

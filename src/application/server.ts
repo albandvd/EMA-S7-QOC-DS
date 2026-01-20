@@ -29,7 +29,7 @@ const treeController = new TreeController(treeService);
 treeController.registerRoutes(app);
 
 const forestRepo = new ForestRepositoryAdapter();
-const forestService = new ForestService(forestRepo);
+const forestService = new ForestService(forestRepo, treeRepo);
 const forestController = new ForestController(forestService);
 forestController.registerRoutes(app);
 
