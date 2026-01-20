@@ -17,7 +17,6 @@ The application is written in **TypeScript** and follows a hexagonal architectur
 
 E2E test with Bruno on every Endpoint,
 Unit test with jest,
-Integration test with supertest, 
 
 ### Endpoints 
 
