@@ -118,30 +118,22 @@ describe("ForestService", () => {
                 new Tree(new Date(), Species.FIR, Exposure.SHADOW, 20),
                 new Tree(new Date(), Species.OAK, Exposure.SUNNY, 15),
             ];
-            const forest = new Forest("forest1", ForestType.TEMPERATE, trees, 45);
-            mockForestRepository.get.mockResolvedValue(forest);
             const updatedForest = new Forest("forest1", ForestType.TEMPERATE, [trees[2]], 45);
-            mockForestRepository.update.mockResolvedValue(updatedForest);
+            mockForestRepository.deforest.mockResolvedValue(updatedForest);
 
             const result = await forestService.deforest("forest1", 2);
 
-            expect(result?.trees.length).toBe(1);
-            expect(mockForestRepository.get).toHaveBeenCalledWith("forest1");
-            expect(mockForestRepository.update).toHaveBeenCalledWith("forest1", forest);
+            expect(result).toEqual(updatedForest);
+            expect(mockForestRepository.deforest).toHaveBeenCalledWith("forest1", 2);
         });
 
         it("should throw NotFoundError when deforesting a non-existent forest", async () => {
-            mockForestRepository.get.mockResolvedValue(null);
+            mockForestRepository.deforest.mockResolvedValue(null);
             await expect(forestService.deforest("non-existent", 1)).rejects.toThrow(NotFoundError);
         });
 
         it("should throw an error when there are not enough trees to deforest", async () => {
-            const trees: Tree[] = [
-                new Tree(new Date(), Species.OAK, Exposure.SUNNY, 10),
-            ];
-            const forest = new Forest("forest1", ForestType.TEMPERATE, trees, 45);
-            mockForestRepository.get.mockResolvedValue(forest);
-
+            mockForestRepository.deforest.mockRejectedValue(new Error("Not enough trees to deforest"));
             await expect(forestService.deforest("forest1", 2)).rejects.toThrow("Not enough trees to deforest");
         });
     });
