@@ -1,11 +1,11 @@
 meta {
   name: Update forest
   type: http
-  seq: 2
+  seq: 6
 }
 
 put {
-  url: http://localhost:3000/forest/{{forestId}}
+  url: http://localhost:3000/forest/{{ForestId}}
   body: json
   auth: none
 }
@@ -16,4 +16,13 @@ body:json {
     "surface": 1500,
     "trees": []
   }
+}
+
+tests {
+  test("Tree received", () => {
+    expect(res.status).to.equal(200)
+    expect(res.body).to.have.property("type", "TROPICAL")
+    expect(res.body).to.have.property("surface", 1500)
+  })
+  
 }

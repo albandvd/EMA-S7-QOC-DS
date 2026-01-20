@@ -1,7 +1,7 @@
 meta {
   name: Create forest
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
@@ -16,4 +16,15 @@ body:json {
     "surface": 1000,
     "trees": []
   }
+}
+
+tests {
+  test("Forest created", () => {
+    expect(res.status).to.equal(201)
+  
+    const body = res.body
+    expect(body).to.have.property("id")
+    const ForestId = body.id
+    bru.setVar("ForestId", ForestId)
+  })
 }
