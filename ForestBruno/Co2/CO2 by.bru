@@ -1,0 +1,22 @@
+meta {
+  name: CO2 by
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/co2/required-area
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "co2Amount": 1500
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
