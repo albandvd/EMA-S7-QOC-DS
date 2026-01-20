@@ -1,0 +1,11 @@
+meta {
+  name: Delete forest
+  type: http
+  seq: 9
+}
+
+delete {
+  url: http://localhost:3000/forest/{{forestId}}
+  body: none
+  auth: none
+}

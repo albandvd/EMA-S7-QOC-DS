@@ -1,0 +1,11 @@
+meta {
+  name: Get forest species
+  type: http
+  seq: 10
+}
+
+get {
+  url: http://localhost:3000/forest/{{forestId}}/species
+  body: none
+  auth: none
+}

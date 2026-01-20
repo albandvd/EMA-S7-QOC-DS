@@ -1,0 +1,19 @@
+meta {
+  name: Update forest
+  type: http
+  seq: 8
+}
+
+put {
+  url: http://localhost:3000/forest/{{forestId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "TROPICAL",
+    "surface": 1500,
+    "trees": []
+  }
+}

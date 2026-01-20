@@ -1,0 +1,20 @@
+meta {
+  name: Update tree
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/tree/{{treeId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "birth": "2024-01-01T00:00:00.000Z",
+    "species": "BEECH",
+    "exposure": "SHADOW",
+    "carbonStorageCapacity": 150
+  }
+}
