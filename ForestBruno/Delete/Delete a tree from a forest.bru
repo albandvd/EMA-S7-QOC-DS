@@ -1,11 +1,11 @@
 meta {
   name: Delete a tree from a forest
   type: http
-  seq: 5
+  seq: 1
 }
 
 delete {
-  url: 
+  url: http://localhost:3000/forest/{{ForestId}}/tree/{{treeId2}}
   body: none
   auth: inherit
 }

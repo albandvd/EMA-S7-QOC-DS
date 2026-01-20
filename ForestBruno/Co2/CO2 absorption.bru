@@ -1,0 +1,16 @@
+meta {
+  name: CO2 absorption
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/co2/forest/{{ForestId}}/absorption
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
