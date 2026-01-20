@@ -220,6 +220,40 @@ paths:
                 items:
                   type: string
 
+  /forest/{id}/deforest:
+    post:
+      summary: Deforest a forest by a given number of trees
+      operationId: deforestForest
+      tags:
+        - forest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                count:
+                  type: integer
+      responses:
+        '200':
+          description: The updated forest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forest"
+        '400':
+          description: Not enough trees to deforest
+        '404':
+          description: Forest not found
+
   /co2/forest/{id}/absorption:
     get:
       summary: Get the CO2 absorption of a forest
@@ -314,25 +348,18 @@ components:
     Forest:
       required:
         - id
-        - name
         - type
-        - latitude
-        - longitude
+        - surface
       properties:
         id:
           type: string
           format: uuid
-        name:
-          type: string
         type:
           $ref: '#/components/schemas/ForestType'
-        latitude:
-          type: number
-          format: double
-        longitude:
-          type: number
-          format: double
         trees:
           type: array
           items:
             $ref: "#/components/schemas/Tree"
+        surface:
+          type: number
+          format: double
