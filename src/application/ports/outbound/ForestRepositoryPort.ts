@@ -6,4 +6,5 @@ export interface ForestRepositoryPort {
     getAll(): Promise<Forest[]>;
     update(id: string, forest: Forest): Promise<Forest | null>;
     delete(id: string): Promise<boolean>;
+    deforest(id: string): Promise<boolean>;
 }
