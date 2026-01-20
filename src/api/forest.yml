@@ -5,7 +5,7 @@ info:
   license:
     name: MIT
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:3000
 paths:
   /tree:
     get:
@@ -22,6 +22,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Tree"
+    post:
+      summary: Create a tree
+      operationId: createTree
+      tags:
+        - tree
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tree"
+      responses:
+        '201':
+          description: Tree created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tree"
 
   /tree/{id}:
     get:
@@ -43,6 +61,215 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tree"
+    put:
+      summary: Update a tree
+      operationId: updateTree
+      tags:
+        - tree
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The tree id
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tree"
+      responses:
+        '200':
+          description: Tree updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tree"
+    delete:
+      summary: Delete a tree
+      operationId: deleteTree
+      tags:
+        - tree
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The tree id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Tree deleted
+
+  /forest:
+    get:
+      summary: List all forests
+      operationId: listForests
+      tags:
+        - forest
+      responses:
+        '200':
+          description: A forest list was found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Forest"
+    post:
+      summary: Create a forest
+      operationId: createForest
+      tags:
+        - forest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Forest"
+      responses:
+        '201':
+          description: Forest created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forest"
+
+  /forest/{id}:
+    get:
+      summary: Info for a forest
+      operationId: getForest
+      tags:
+        - forest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A forest was found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forest"
+    put:
+      summary: Update a forest
+      operationId: updateForest
+      tags:
+        - forest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Forest"
+      responses:
+        '200':
+          description: Forest updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forest"
+    delete:
+      summary: Delete a forest
+      operationId: deleteForest
+      tags:
+        - forest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Forest deleted
+          
+  /forest/{id}/species:
+    get:
+      summary: Get all tree species in a forest
+      operationId: getForestTreeSpecies
+      tags:
+        - forest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of species was found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /co2/forest/{id}/absorption:
+    get:
+      summary: Get the CO2 absorption of a forest
+      operationId: getForestAbsorption
+      tags:
+        - co2
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The forest id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The CO2 absorption of the forest
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  absorption:
+                    type: number
+                    format: double
+  
+  /co2/required-area:
+    get:
+      summary: Calculate the required forest area to absorb a given amount of CO2
+      operationId: getRequiredArea
+      tags:
+        - co2
+      parameters:
+        - name: co2Amount
+          in: query
+          required: true
+          description: The amount of CO2 to absorb in kg/year
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: The required forest area in hectares
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requiredArea:
+                    type: number
+                    format: double
 
 components:
   schemas:
@@ -58,6 +285,11 @@ components:
         - SUNNY
         - MID_SHADOW
         - SHADOW
+    ForestType:
+      enum:
+        - BOREAL
+        - TEMPERATE
+        - TROPICAL
     Tree:
       required:
         - id
@@ -79,3 +311,28 @@ components:
         carbonStorageCapacity:
           type: number
           format: double
+    Forest:
+      required:
+        - id
+        - name
+        - type
+        - latitude
+        - longitude
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/ForestType'
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        trees:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tree"

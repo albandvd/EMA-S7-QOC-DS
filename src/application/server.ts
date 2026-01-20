@@ -7,6 +7,11 @@ import swaggerUi from 'swagger-ui-express';
 import { TreeRepositoryAdapter } from "../infrastructure/adapters/treeRepositoryAdapter";
 import { TreeService } from "../domain/services/TreeService";
 import { TreeController } from "../presentation/controllers/treeController";
+import { ForestRepositoryAdapter } from "../infrastructure/adapters/forestRepositoryAdapter";
+import { ForestService } from "../domain/services/ForestService";
+import { ForestController } from "../presentation/controllers/forestController";
+import { CO2AbsorptionService } from "../domain/services/CO2AbsorptionService";
+import { CO2Controller } from "../presentation/controllers/co2Controller";
 import { errorHandler } from "./errorHandling";
 
 const app = express();
@@ -22,6 +27,15 @@ const treeRepo = new TreeRepositoryAdapter();
 const treeService = new TreeService(treeRepo);
 const treeController = new TreeController(treeService);
 treeController.registerRoutes(app);
+
+const forestRepo = new ForestRepositoryAdapter();
+const forestService = new ForestService(forestRepo);
+const forestController = new ForestController(forestService);
+forestController.registerRoutes(app);
+
+const co2AbsorptionService = new CO2AbsorptionService();
+const co2Controller = new CO2Controller(co2AbsorptionService, forestService);
+co2Controller.registerRoutes(app);
 
 app.use(errorHandler);
 

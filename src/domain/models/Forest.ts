@@ -1,9 +1,11 @@
 import { ForestType } from "./ForestType";
 import { Tree } from "./Tree";
 
-export default interface Forest {
-  id: string;
-  type: ForestType;
-  trees: Tree[];
-  surface: number;
+export default class Forest {
+  constructor(
+    public id: string,
+    public type: ForestType,
+    public trees: Tree[],
+    public surface: number
+  ) {}
 }

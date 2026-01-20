@@ -5,4 +5,5 @@ import Forest from "../../../domain/models/Forest";
  */
 export interface CO2AbsorptionServicePort {
   getAbsorption(forest: Forest): number;
+  calculateRequiredForestArea(co2Amount: number): number;
 }
