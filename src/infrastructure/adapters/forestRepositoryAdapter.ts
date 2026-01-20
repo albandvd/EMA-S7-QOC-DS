@@ -44,4 +44,18 @@ export class ForestRepositoryAdapter implements ForestRepositoryPort {
     this.forests.splice(index, 1);
     return true;
   }
+
+  async deforest(id: string, count: number): Promise<Forest | null> {
+    const forest = await this.get(id);
+    if (!forest) {
+      return null;
+    }
+
+    if (forest.trees.length < count) {
+      throw new Error("Not enough trees to deforest");
+    }
+
+    forest.trees.splice(0, count);
+    return forest;
+  }
 }
