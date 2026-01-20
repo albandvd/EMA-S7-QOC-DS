@@ -44,4 +44,18 @@ export class ForestService implements ForestServicePort {
         const species = forest.trees.map((tree) => Species[tree.species]);
         return [...new Set(species)];
     }
+
+    async deforest(id: string, count: number): Promise<Forest | null> {
+        const forest = await this.forestRepository.get(id);
+        if (!forest) {
+            throw new NotFoundError("Forest not found");
+        }
+
+        if (forest.trees.length < count) {
+            throw new Error("Not enough trees to deforest");
+        }
+
+        forest.trees.splice(0, count);
+        return this.forestRepository.update(id, forest);
+    }
 }

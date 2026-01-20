@@ -13,6 +13,7 @@ const mockForestRepository: jest.Mocked<ForestRepositoryPort> = {
     getAll: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    deforest: jest.fn(),
 };
 
 describe("ForestService", () => {
@@ -108,5 +109,39 @@ describe("ForestService", () => {
     it("should throw NotFoundError when getting tree species of a non-existent forest", async () => {
         mockForestRepository.get.mockResolvedValue(null);
         await expect(forestService.getTreeSpecies("non-existent")).rejects.toThrow(NotFoundError);
+    });
+
+    describe("deforest", () => {
+        it("should deforest a forest", async () => {
+            const trees: Tree[] = [
+                new Tree(new Date(), Species.OAK, Exposure.SUNNY, 10),
+                new Tree(new Date(), Species.FIR, Exposure.SHADOW, 20),
+                new Tree(new Date(), Species.OAK, Exposure.SUNNY, 15),
+            ];
+            const forest = new Forest("forest1", ForestType.TEMPERATE, trees, 45);
+            mockForestRepository.get.mockResolvedValue(forest);
+            mockForestRepository.update.mockResolvedValue({ ...forest, trees: [trees[2]] });
+
+            const result = await forestService.deforest("forest1", 2);
+
+            expect(result?.trees.length).toBe(1);
+            expect(mockForestRepository.get).toHaveBeenCalledWith("forest1");
+            expect(mockForestRepository.update).toHaveBeenCalledWith("forest1", { ...forest, trees: [trees[2]] });
+        });
+
+        it("should throw NotFoundError when deforesting a non-existent forest", async () => {
+            mockForestRepository.get.mockResolvedValue(null);
+            await expect(forestService.deforest("non-existent", 1)).rejects.toThrow(NotFoundError);
+        });
+
+        it("should throw an error when there are not enough trees to deforest", async () => {
+            const trees: Tree[] = [
+                new Tree(new Date(), Species.OAK, Exposure.SUNNY, 10),
+            ];
+            const forest = new Forest("forest1", ForestType.TEMPERATE, trees, 45);
+            mockForestRepository.get.mockResolvedValue(forest);
+
+            await expect(forestService.deforest("forest1", 2)).rejects.toThrow("Not enough trees to deforest");
+        });
     });
 });

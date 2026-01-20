@@ -12,6 +12,7 @@ export class ForestController {
         app.put('/forest/:id', this.update.bind(this));
         app.delete('/forest/:id', this.delete.bind(this));
         app.get('/forest/:id/species', this.getTreeSpecies.bind(this));
+        app.post('/forest/:id/deforest', this.deforest.bind(this));
     }
 
     async create(req: Request, res: Response): Promise<void> {
@@ -78,6 +79,22 @@ export class ForestController {
         } catch (error) {
             if ((error as Error).message === "Forest not found") {
                 res.status(404).json({ error: (error as Error).message });
+            } else {
+                res.status(500).json({ error: (error as Error).message });
+            }
+        }
+    }
+
+    async deforest(req: Request, res: Response): Promise<void> {
+        try {
+            const { count } = req.body;
+            const forest = await this.forestService.deforest(req.params.id, count);
+            res.status(200).json(forest);
+        } catch (error) {
+            if ((error as Error).message === "Forest not found") {
+                res.status(404).json({ error: (error as Error).message });
+            } else if ((error as Error).message === "Not enough trees to deforest") {
+                res.status(400).json({ error: (error as Error).message });
             } else {
                 res.status(500).json({ error: (error as Error).message });
             }
